@@ -5,6 +5,8 @@ from yt_dlp import YoutubeDL
 from datetime import timedelta
 from youtube_search import YoutubeSearch
 
+from db import sql_start, sql_add_user, sql_add_user_name
+
 import os
 import hashlib
 
@@ -17,11 +19,18 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
+
+async def on_startup(_):
+    await sql_start()
+
+
 MUSIC_MAX_LENGTH = 3600
 
 
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
+    await sql_add_user(user_id=message.from_user.id)
+    await sql_add_user_name(user_id=message.from_user.id, user_name=message.from_user.username)
     await message.reply("Достаточно отправить мне ссылку на музыку YouTube\n\nИли найти музыку через мой "
                         "собственный поиск, например:\n@allmusictg_bot DESPACITO REMIX")
 
@@ -49,6 +58,8 @@ async def inline_handler(query: types.InlineQuery):
 
 @dp.message_handler()
 async def send_music(message: types.Message):
+    await sql_add_user(user_id=message.from_user.id)
+    await sql_add_user_name(user_id=message.from_user.id, user_name=message.from_user.username)
     ydl_opts = {
         'format': 'bestaudio',
         'outtmpl': '%(title)s',
@@ -69,4 +80,4 @@ async def send_music(message: types.Message):
 
 
 if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+    executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
