@@ -10,7 +10,7 @@ from db import sql_start, sql_add_user, sql_add_user_name
 import os
 import hashlib
 
-API_TOKEN = '5964990301:AAFh81A_4AOTRS_B_Ua3CEonRMcyoSko--I'
+API_TOKEN = '5980552182:AAFr_7ArHTD12vUrdB9dwJGlDhymV4Zn11c'
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -24,15 +24,16 @@ async def on_startup(_):
     await sql_start()
 
 
-MUSIC_MAX_LENGTH = 3600
+MUSIC_MAX_LENGTH = 7200
 
 
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     await sql_add_user(user_id=message.from_user.id)
     await sql_add_user_name(user_id=message.from_user.id, user_name=message.from_user.username)
-    await message.reply("Достаточно отправить мне ссылку на музыку YouTube\n\nИли найти музыку через мой "
-                        "собственный поиск, например:\n@allmusictg_bot DESPACITO REMIX")
+    await message.reply("📥 Достаточно отправить мне ссылку на музыку YouTube\n🔍 Или найти музыку через мой "
+                        "собственный поиск\nНапример:\n@allmusictg_bot 'ваш запрос'\n\n🔖 Более подробная "
+                        "инструкция:\nhttps://telegra.ph/Instrukciya-po-ispolzovaniyu-MusicTG-bota-12-26")
 
 
 def searcher(text):
@@ -69,7 +70,7 @@ async def send_music(message: types.Message):
     info_dict = ydl.extract_info(message.text, download=False)
     if info_dict['duration'] > MUSIC_MAX_LENGTH:
         readable_max_length = str(timedelta(seconds=MUSIC_MAX_LENGTH))
-        await message.reply("🎸 Время вашей песни превышает лимит в 1 час.")
+        await message.reply("🎸 Время вашей песни превышает лимит в 2 часа.")
         return
     d_status = await message.reply("💾 Скачиваю...", disable_notification=True)
     ydl.process_info(info_dict)
