@@ -1,0 +1,15 @@
+services:
+  tgmusicbot:
+    container_name: tgmusicbot
+    build: ..
+    command: python app/main.py
+
+    volumes:
+      - ..:/code
+      - ../TEMP:/app/TEMP
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
